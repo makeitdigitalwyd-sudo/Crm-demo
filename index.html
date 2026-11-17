@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LeadFlow CRM — Leads, Follow-Ups & Staff Conversions</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .fade-in { animation: fadeIn 0.16s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col lg:flex-row">
+
+  <!-- Mobile Top Header -->
+  <header class="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">LF</div>
+      <div>
+        <div class="font-semibold text-slate-900 text-sm leading-tight">LeadFlow CRM</div>
+        <div class="text-[11px] text-slate-500">Leads &amp; Staff Tracker</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="mobile-add-lead-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-700 transition">
+        <span>+ Add Lead</span>
+      </button>
+      <button id="mobile-menu-btn" aria-label="Toggle Menu" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Nav -->
+  <div id="mobile-nav-overlay" class="hidden fixed inset-0 bg-slate-900/40 z-40 lg:hidden"></div>
+  <aside id="sidebar" class="fixed lg:sticky top-0 left-0 z-50 lg:z-20 h-screen w-64 bg-white border-r border-slate-200 flex flex-col justify-between transform -translate-x-full lg:translate-x-0 transition-transform duration-200">
+    <div>
+      <!-- Brand -->
+      <div class="px-5 py-5 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-base shadow-sm">LF</div>
+          <div>
+            <div class="font-bold text-slate-900 text-base tracking-tight">LeadFlow</div>
+            <div class="text-xs text-slate-500">Simple Team CRM</div>
+          </div>
+        </div>
+        <button id="close-mobile-menu" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100" aria-label="Close Menu">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Primary Action -->
+      <div class="p-4">
+        <button id="sidebar-add-lead-btn" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 active:scale-[0.99] transition shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          <span>Add New Lead</span>
+        </button>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="px-3 space-y-1" aria-label="Main Navigation">
+        <button data-nav="dashboard" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <span>Dashboard</span>
+          </span>
+        </button>
+        <button data-nav="leads" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span>Leads &amp; Pipeline</span>
+          </span>
+          <span id="nav-leads-count" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold">0</span>
+        </button>
+        <button data-nav="customers" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Customers</span>
+          </span>
+          <span id="nav-customers-count" class="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">0</span>
+        </button>
+        <button data-nav="staff" class="nav-btn w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition">
+          <span class="flex items-center gap-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span>Staff Profiles</span>
+          </span>
+          <span id="nav-staff-count" class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold">0</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Bottom Data Tools -->
+    <div class="p-4 border-t border-slate-100 space-y-2">
+      <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 px-1">Data &amp; Backup</div>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="export-csv-btn" class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 transition">Export CSV</button>
+        <label class="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-medium text-slate-700 hover:bg-slate-50 transition text-center cursor-pointer">
+          Import CSV
+          <input id="import-csv-input" type="file" accept=".csv" class="hidden" />
+        </label>
+      </div>
+      <button id="reset-demo-btn" class="w-full px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition text-left">
+        Reset to Sample Data
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+    <div id="app-view" class="fade-in"></div>
+  </main>
+
+  <!-- Add / Edit Lead Modal -->
+  <div id="lead-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[1px]">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-slate-200">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+        <h2 id="lead-modal-title" class="text-lg font-bold text-slate-900">Add New Lead</h2>
+        <button data-close-modal="lead-modal" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="lead-form" class="p-6 space-y-4">
+        <input type="hidden" id="lead-id-input" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Lead Name *</label>
+            <input id="lead-name-input" type="text" required placeholder="e.g. Rajesh Nair" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Business / Company</label>
+            <input id="lead-business-input" type="text" placeholder="e.g. Malabar Traders" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Phone Number *</label>
+            <input id="lead-phone-input" type="tel" required placeholder="+91 98470 12345" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">WhatsApp Number</label>
+            <input id="lead-whatsapp-input" type="tel" placeholder="Same as phone if blank" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Location</label>
+            <input id="lead-location-input" type="text" placeholder="e.g. Kochi, Kerala" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Lead Source</label>
+            <select id="lead-source-input" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Website">Website</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Referral">Referral</option>
+              <option value="Cold Call">Cold Call</option>
+              <option value="Walk-in">Walk-in</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Assign to Staff</label>
+            <select id="lead-staff-input" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Stage / Status</label>
+            <select id="lead-status-input" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="new">New</option>
+              <option value="working">Working</option>
+              <option value="followup">Follow-Up</option>
+              <option value="customer">Customer</option>
+              <option value="lost">Lost</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Est. Value (₹)</label>
+            <input id="lead-value-input" type="number" min="0" step="500" placeholder="25000" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Next Follow-Up Date</label>
+            <input id="lead-nextdate-input" type="date" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div class="flex items-end pb-1">
+            <p class="text-[11px] text-slate-500 leading-snug">Tip: Assigning a staff member automatically moves a "New" lead into "Working".</p>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Initial Requirement / Notes</label>
+          <textarea id="lead-notes-input" rows="2" placeholder="What are they looking for?" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" data-close-modal="lead-modal" class="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 shadow-sm">Save Lead</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Lead Detail & Follow-Up Modal -->
+  <div id="detail-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[1px]">
+    <div id="detail-modal-content" class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[92vh] overflow-y-auto border border-slate-200"></div>
+  </div>
+
+  <!-- Add / Edit Staff Modal -->
+  <div id="staff-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[1px]">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <h2 id="staff-modal-title" class="text-lg font-bold text-slate-900">Add Staff Member</h2>
+        <button data-close-modal="staff-modal" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="staff-form" class="p-6 space-y-4">
+        <input type="hidden" id="staff-id-input" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+          <input id="staff-name-input" type="text" required placeholder="e.g. Arun Menon" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Role / Designation *</label>
+          <input id="staff-role-input" type="text" required placeholder="e.g. Sales Executive" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Phone</label>
+            <input id="staff-phone-input" type="tel" placeholder="+91 98470 00000" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Email</label>
+            <input id="staff-email-input" type="email" placeholder="arun@company.com" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+          </div>
+        </div>
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" data-close-modal="staff-modal" class="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 shadow-sm">Save Staff</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirm-modal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/50">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 border border-slate-200 space-y-4">
+      <h3 id="confirm-title" class="text-base font-bold text-slate-900">Confirm Action</h3>
+      <p id="confirm-message" class="text-sm text-slate-600"></p>
+      <div class="flex justify-end gap-2 pt-2">
+        <button id="confirm-cancel-btn" class="px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50">Cancel</button>
+        <button id="confirm-ok-btn" class="px-4 py-2 rounded-xl bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-[70] space-y-2 pointer-events-none"></div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'leadflow_crm_v1';
+
+      const STATUS_META = {
+        new:      { label: 'New',       badge: 'bg-slate-100 text-slate-700 border-slate-200',     dot: 'bg-slate-400',   bar: 'bg-slate-400' },
+        working:  { label: 'Working',   badge: 'bg-blue-50 text-blue-700 border-blue-200',         dot: 'bg-blue-500',    bar: 'bg-blue-500' },
+        followup: { label: 'Follow-Up', badge: 'bg-amber-50 text-amber-700 border-amber-200',      dot: 'bg-amber-500',   bar: 'bg-amber-500' },
+        customer: { label: 'Customer',  badge: 'bg-emerald-50 text-emerald-700 border-emerald-200',dot: 'bg-emerald-500', bar: 'bg-emerald-500' },
+        lost:     { label: 'Lost',      badge: 'bg-rose-50 text-rose-700 border-rose-200',         dot: 'bg-rose-400',    bar: 'bg-rose-400' }
+      };
+
+      const AVATAR_COLORS = [
+        'bg-indigo-100 text-indigo-700',
+        'bg-emerald-100 text-emerald-700',
+        'bg-amber-100 text-amber-700',
+        'bg-sky-100 text-sky-700',
+        'bg-purple-100 text-purple-700',
+        'bg-rose-100 text-rose-700'
+      ];
+
+      function todayISO(offsetDays = 0) {
+        const d = new Date();
+        d.setDate(d.getDate() + offsetDays);
+        return d.toISOString().slice(0, 10);
+      }
+
+      function createSeedData() {
+        return {
+          staff: [
+            { id: 'st_1', name: 'Arun Menon', role: 'Senior Sales Executive', phone: '+91-98471-11220', email: 'arun@leadflow.in', colorIdx: 0 },
+            { id: 'st_2', name: 'Fathima Beevi', role: 'Client Relationship Lead', phone: '+91-97452-33441', email: 'fathima@leadflow.in', colorIdx: 1 },
+            { id: 'st_3', name: 'Vishnu Prasad', role: 'Field Sales Executive', phone: '+91-94460-55662', email: 'vishnu@leadflow.in', colorIdx: 2 }
+          ],
+          leads: [
+            {
+              id: 'ld_1', name: 'Rajesh Nair', business: 'Malabar Timber & Doors', phone: '+91-98470-22110', whatsapp: '+91-98470-22110',
+              location: 'Kochi', source: 'WhatsApp', status: 'customer', assignedTo: 'st_1', value: 65000,
+              nextFollowUp: '', notes: 'Wanted full site tracking & quotation module.', createdAt: todayISO(-12), convertedAt: todayISO(-3),
+              activities: [
+                { id: 'ac_1', type: 'created', by: 'Admin', text: 'Lead added from WhatsApp inquiry', date: todayISO(-12) + ' 10:15' },
+                { id: 'ac_2', type: 'assigned', by: 'Admin', text: 'Assigned to Arun Menon (moved to Working)', date: todayISO(-12) + ' 10:20' },
+                { id: 'ac_3', type: 'followup', by: 'Arun Menon', outcome: 'Meeting Done', text: 'Demonstrated app features and shared pricing.', date: todayISO(-8) + ' 15:30' },
+                { id: 'ac_4', type: 'status', by: 'Arun Menon', text: 'Converted lead to Customer (₹65,000)', date: todayISO(-3) + ' 11:45' }
+              ]
+            },
+            {
+              id: 'ld_2', name: 'Shameer Ali', business: 'Calicut UPVC Solutions', phone: '+91-98951-44321', whatsapp: '+91-98951-44321',
+              location: 'Kozhikode', source: 'Referral', status: 'customer', assignedTo: 'st_1', value: 48000,
+              nextFollowUp: '', notes: 'Referred by Malabar Timber.', createdAt: todayISO(-10), convertedAt: todayISO(-1),
+              activities: [
+                { id: 'ac_5', type: 'created', by: 'Admin', text: 'Lead added via Referral', date: todayISO(-10) + ' 09:40' },
+                { id: 'ac_6', type: 'assigned', by: 'Admin', text: 'Assigned to Arun Menon', date: todayISO(-10) + ' 09:45' },
+                { id: 'ac_7', type: 'followup', by: 'Arun Menon', outcome: 'Quote Sent', text: 'Sent custom proposal on WhatsApp.', date: todayISO(-5) + ' 14:10' },
+                { id: 'ac_8', type: 'status', by: 'Arun Menon', text: 'Converted lead to Customer (₹48,000)', date: todayISO(-1) + ' 16:00' }
+              ]
+            },
+            {
+              id: 'ld_3', name: 'Deepa Thomas', business: 'Kottayam Interiors', phone: '+91-94471-88901', whatsapp: '+91-94471-88901',
+              location: 'Kottayam', source: 'Instagram', status: 'customer', assignedTo: 'st_2', value: 52000,
+              nextFollowUp: '', notes: 'Needs multi-staff quotation workflow.', createdAt: todayISO(-9), convertedAt: todayISO(-2),
+              activities: [
+                { id: 'ac_9', type: 'created', by: 'Admin', text: 'Lead added from Instagram DM', date: todayISO(-9) + ' 12:00' },
+                { id: 'ac_10', type: 'assigned', by: 'Admin', text: 'Assigned to Fathima Beevi', date: todayISO(-9) + ' 12:05' },
+                { id: 'ac_11', type: 'followup', by: 'Fathima Beevi', outcome: 'Called', text: 'Discussed requirements and onboarding timeline.', date: todayISO(-6) + ' 11:20' },
+                { id: 'ac_12', type: 'status', by: 'Fathima Beevi', text: 'Converted lead to Customer (₹52,000)', date: todayISO(-2) + ' 17:15' }
+              ]
+            },
+            {
+              id: 'ld_4', name: 'Nithin Kumar', business: 'Thrissur Builders Hub', phone: '+91-97440-11998', whatsapp: '+91-97440-11998',
+              location: 'Thrissur', source: 'Website', status: 'followup', assignedTo: 'st_2', value: 40000,
+              nextFollowUp: todayISO(0), notes: 'Asked to call back today afternoon.', createdAt: todayISO(-4), convertedAt: '',
+              activities: [
+                { id: 'ac_13', type: 'created', by: 'Admin', text: 'Website contact form submission', date: todayISO(-4) + ' 16:10' },
+                { id: 'ac_14', type: 'assigned', by: 'Admin', text: 'Assigned to Fathima Beevi', date: todayISO(-4) + ' 16:15' },
+                { id: 'ac_15', type: 'followup', by: 'Fathima Beevi', outcome: 'Interested', text: 'Liked demo; requested follow-up call today.', date: todayISO(-2) + ' 10:30' }
+              ]
+            },
+            {
+              id: 'ld_5', name: 'Faisal Rahman', business: 'Malappuram Hardware Mart', phone: '+91-96331-77654', whatsapp: '+91-96331-77654',
+              location: 'Malappuram', source: 'Cold Call', status: 'working', assignedTo: 'st_3', value: 30000,
+              nextFollowUp: todayISO(1), notes: 'Initial call positive; needs WhatsApp brochure.', createdAt: todayISO(-2), convertedAt: '',
+              activities: [
+                { id: 'ac_16', type: 'created', by: 'Admin', text: 'Added from outbound list', date: todayISO(-2) + ' 11:00' },
+                { id: 'ac_17', type: 'assigned', by: 'Admin', text: 'Assigned to Vishnu Prasad (Working)', date: todayISO(-2) + ' 11:05' }
+              ]
+            },
+            {
+              id: 'ld_6', name: 'Anjali Menon', business: 'Ernakulam Decor Studio', phone: '+91-98462-99001', whatsapp: '+91-98462-99001',
+              location: 'Ernakulam', source: 'WhatsApp', status: 'new', assignedTo: '', value: 35000,
+              nextFollowUp: '', notes: 'Unassigned — needs quick assignment.', createdAt: todayISO(0), convertedAt: '',
+              activities: [
+                { id: 'ac_18', type: 'created', by: 'Admin', text: 'New WhatsApp inquiry received', date: todayISO(0) + ' 09:15' }
+              ]
+            },
+            {
+              id: 'ld_7', name: 'Suresh Babu', business: 'Palakkad Glass & Steel', phone: '+91-94475-33219', whatsapp: '+91-94475-33219',
+              location: 'Palakkad', source: 'Walk-in', status: 'followup', assignedTo: 'st_1', value: 55000,
+              nextFollowUp: todayISO(-1), notes: 'Overdue follow-up — check quote approval.', createdAt: todayISO(-6), convertedAt: '',
+              activities: [
+                { id: 'ac_19', type: 'created', by: 'Admin', text: 'Walk-in inquiry logged', date: todayISO(-6) + ' 14:20' },
+                { id: 'ac_20', type: 'assigned', by: 'Admin', text: 'Assigned to Arun Menon', date: todayISO(-6) + ' 14:25' },
+                { id: 'ac_21', type: 'followup', by: 'Arun Menon', outcome: 'Quote Sent', text: 'Shared estimate ₹55,000.', date: todayISO(-3) + ' 17:00' }
+              ]
+            },
+            {
+              id: 'ld_8', name: 'Riyas K', business: 'Kannur Aluminium Works', phone: '+91-99461-22887', whatsapp: '+91-99461-22887',
+              location: 'Kannur', source: 'Instagram', status: 'lost', assignedTo: 'st_3', value: 25000,
+              nextFollowUp: '', notes: 'Postponed project for 6 months.', createdAt: todayISO(-15), convertedAt: '',
+              activities: [
+                { id: 'ac_22', type: 'created', by: 'Admin', text: 'Lead added from Instagram', date: todayISO(-15) + ' 13:00' },
+                { id: 'ac_23', type: 'assigned', by: 'Admin', text: 'Assigned to Vishnu Prasad', date: todayISO(-15) + ' 13:05' },
+                { id: 'ac_24', type: 'followup', by: 'Vishnu Prasad', outcome: 'Called', text: 'Client paused requirement for now.', date: todayISO(-7) + ' 12:10' },
+                { id: 'ac_25', type: 'status', by: 'Vishnu Prasad', text: 'Marked as Lost', date: todayISO(-7) + ' 12:12' }
+              ]
+            }
+          ]
+        };
+      }
+
+      let state = {
+        data: loadData(),
+        view: 'dashboard', // 'dashboard' | 'leads' | 'customers' | 'staff'
+        leadsLayout: 'table', // 'table' | 'board'
+        filters: { search: '', status: 'all', staffId: 'all', source: 'all' },
+        selectedStaffId: null,
+        staffTab: 'leads', // 'leads' | 'followups'
+        staffLeadFilter: 'all'
+      };
+
+      function loadData() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && Array.isArray(parsed.staff) && Array.isArray(parsed.leads)) {
+              return parsed;
+            }
+          }
+        } catch (e) {}
+        return createSeedData();
+      }
+
+      function saveData() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+        } catch (e) {}
+      }
+
+      function uid(prefix) {
+        return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
+      }
+
+      function nowTimestamp() {
+        const d = new Date();
+        return d.toISOString().slice(0, 10) + ' ' + d.toTimeString().slice(0, 5);
+      }
+
+      function esc(str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function formatINR(num) {
+        const n = Number(num) || 0;
+        return '₹' + n.toLocaleString('en-IN');
+      }
+
+      function getStaffById(id) {
+        return state.data.staff.find(s => s.id === id) || null;
+      }
+
+      function initials(name) {
+        const parts = String(name || '?').trim().split(/\s+/);
+        return (parts[0]?.[0] || '') + (parts[1]?.[0] || '').toUpperCase();
+      }
+
+      function cleanPhoneForWA(phone) {
+        const digits = String(phone || '').replace(/\D/g, '');
+        if (!digits) return '';
+        return digits.length === 10 ? '91' + digits : digits;
+      }
+
+      function getStaffMetrics(staffId) {
+        const assigned = state.data.leads.filter(l => l.assignedTo === staffId);
+        const customers = assigned.filter(l => l.status === 'customer');
+        const active = assigned.filter(l => l.status === 'working' || l.status === 'followup' || l.status === 'new');
+        const lost = assigned.filter(l => l.status === 'lost');
+        const conversionRate = assigned.length ? Math.round((customers.length / assigned.length) * 100) : 0;
+        const customerValue = customers.reduce((sum, l) => sum + (Number(l.value) || 0), 0);
+        return { assigned, customers, active, lost, conversionRate, customerValue };
+      }
+
+      function toast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        const bg = type === 'error' ? 'bg-rose-600' : type === 'info' ? 'bg-slate-800' : 'bg-emerald-600';
+        el.className = `${bg} text-white px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium fade-in pointer-events-auto`;
+        el.textContent = message;
+        container.appendChild(el);
+        setTimeout(() => { el.remove(); }, 2800);
+      }
+
+      let confirmCallback = null;
+      function openConfirm(title, message, onConfirm) {
+        document.getElementById('confirm-title').textContent = title;
+        document.getElementById('confirm-message').textContent = message;
+        confirmCallback = onConfirm;
+        document.getElementById('confirm-modal').classList.remove('hidden');
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+      }
+
+      function updateSidebarCounts() {
+        const leads = state.data.leads;
+        document.getElementById('nav-leads-count').textContent = leads.length;
+        document.getElementById('nav-customers-count').textContent = leads.filter(l => l.status === 'customer').length;
+        document.getElementById('nav-staff-count').textContent = state.data.staff.length;
+
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+          const isActive = btn.dataset.nav === state.view;
+          btn.classList.toggle('bg-indigo-50', isActive);
+          btn.classList.toggle('text-indigo-700', isActive);
+          btn.classList.toggle('text-slate-600', !isActive);
+          btn.classList.toggle('hover:bg-slate-100', !isActive);
+        });
+      }
+
+      function statusBadge(status) {
+        const m = STATUS_META[status] || STATUS_META.new;
+        return `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${m.badge}"><span class="w-1.5 h-1.5 rounded-full ${m.dot}"></span>${m.label}</span>`;
+      }
+
+      function render() {
+        updateSidebarCounts();
+        const container = document.getElementById('app-view');
+        if (state.view === 'dashboard') {
+          container.innerHTML = renderDashboard();
+        } else if (state.view === 'leads') {
+          container.innerHTML = renderLeadsView();
+        } else if (state.view === 'customers') {
+          container.innerHTML = renderCustomersView();
+        } else if (state.view === 'staff') {
+          container.innerHTML = state.selectedStaffId ? renderStaffProfile(state.selectedStaffId) : renderStaffDirectory();
+        }
+      }
+
+      function renderDashboard() {
+        const leads = state.data.leads;
+        const total = leads.length;
+        const workingCount = leads.filter(l => l.status === 'working' || l.status === 'followup').length;
+        const customerCount = leads.filter(l => l.status === 'customer').length;
+        const newCount = leads.filter(l => l.status === 'new').length;
+        const lostCount = leads.filter(l => l.status === 'lost').length;
+        const convRate = total ? Math.round((customerCount / total) * 100) : 0;
+        const revenueWon = leads.filter(l => l.status === 'customer').reduce((s, l) => s + (Number(l.value) || 0), 0);
+
+        const today = todayISO(0);
+        const dueFollowUps = leads
+          .filter(l => (l.status === 'working' || l.status === 'followup') && l.nextFollowUp)
+          .sort((a, b) => a.nextFollowUp.localeCompare(b.nextFollowUp));
+
+        const staffRows = state.data.staff.map(st => {
+          const m = getStaffMetrics(st.id);
+          return `
+            <tr data-open-staff="${st.id}" class="hover:bg-slate-50 cursor-pointer transition">
+              <td class="py-3 px-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full ${AVATAR_COLORS[st.colorIdx % AVATAR_COLORS.length]} flex items-center justify-center text-xs font-bold">${esc(initials(st.name))}</div>
+                  <div>
+                    <div class="font-semibold text-slate-900 text-sm">${esc(st.name)}</div>
+                    <div class="text-xs text-slate-500">${esc(st.role)}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="py-3 px-3 text-sm text-slate-700 text-right font-medium">${m.assigned.length}</td>
+              <td class="py-3 px-3 text-sm text-blue-700 text-right font-medium">${m.active.length}</td>
+              <td class="py-3 px-3 text-right">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700">${m.customers.length}</span>
+              </td>
+              <td class="py-3 px-4 text-right text-sm font-semibold text-slate-900">${m.conversionRate}%</td>
+            </tr>
+          `;
+        }).join('');
+
+        const stages = [
+          { key: 'new', count: newCount },
+          { key: 'working', count: leads.filter(l => l.status === 'working').length },
+          { key: 'followup', count: leads.filter(l => l.status === 'followup').length },
+          { key: 'customer', count: customerCount },
+          { key: 'lost', count: lostCount }
+        ];
+
+        return `
+          <div class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
+                <p class="text-sm text-slate-500">Overview of your leads, active follow-ups, and staff customer conversions.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button data-goto="leads" class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 transition">View Pipeline</button>
+                <button data-action="open-add-lead" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 shadow-sm transition">+ Add Lead</button>
+              </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Leads</div>
+                <div class="mt-2 flex items-baseline justify-between">
+                  <div class="text-3xl font-bold text-slate-900">${total}</div>
+                  <span class="text-xs font-medium text-slate-500">${newCount} unassigned</span>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Working &amp; Follow-Up</div>
+                <div class="mt-2 flex items-baseline justify-between">
+                  <div class="text-3xl font-bold text-blue-600">${workingCount}</div>
+                  <span class="text-xs font-medium text-amber-600">${dueFollowUps.length} scheduled</span>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Customers Made</div>
+                <div class="mt-2 flex items-baseline justify-between">
+                  <div class="text-3xl font-bold text-emerald-600">${customerCount}</div>
+                  <span class="text-xs font-semibold text-emerald-700">${formatINR(revenueWon)}</span>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+                <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Conversion Rate</div>
+                <div class="mt-2 flex items-baseline justify-between">
+                  <div class="text-3xl font-bold text-indigo-600">${convRate}%</div>
+                  <span class="text-xs text-slate-500">Leads → Customers</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Grid: Staff Conversion + Follow-ups -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Staff Performance Card -->
+              <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                  <div>
+                    <h2 class="font-bold text-slate-900 text-base">Staff Conversion Tracker</h2>
+                    <p class="text-xs text-slate-500">Click any staff member to open their full profile &amp; converted customers.</p>
+                  </div>
+                  <button data-goto="staff" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700">All Staff →</button>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="bg-slate-50/80 text-[11px] font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-100">
+                        <th class="py-2.5 px-4">Staff Member</th>
+                        <th class="py-2.5 px-3 text-right">Assigned</th>
+                        <th class="py-2.5 px-3 text-right">Working</th>
+                        <th class="py-2.5 px-3 text-right">Customers</th>
+                        <th class="py-2.5 px-4 text-right">Conv. Rate</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      ${staffRows || '<tr><td colspan="5" class="py-8 text-center text-sm text-slate-500">No staff added yet.</td></tr>'}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Pipeline Breakdown -->
+              <div class="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col justify-between space-y-5">
+                <div>
+                  <h2 class="font-bold text-slate-900 text-base">Pipeline Stages</h2>
+                  <p class="text-xs text-slate-500 mt-0.5">Where your leads currently stand</p>
+                  <div class="mt-4 space-y-3.5">
+                    ${stages.map(st => {
+                      const meta = STATUS_META[st.key];
+                      const pct = total ? Math.round((st.count / total) * 100) : 0;
+                      return `
+                        <div>
+                          <div class="flex items-center justify-between text-xs mb-1">
+                            <span class="font-semibold text-slate-700">${meta.label}</span>
+                            <span class="text-slate-500 font-medium">${st.count} (${pct}%)</span>
+                          </div>
+                          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full ${meta.bar} rounded-full transition-all" style="width:${pct}%"></div>
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+                <div class="pt-3 border-t border-slate-100 text-xs text-slate-500 flex items-center justify-between">
+                  <span>Active pipeline value</span>
+                  <span class="font-bold text-slate-900">${formatINR(leads.filter(l => l.status === 'working' || l.status === 'followup' || l.status === 'new').reduce((s, l) => s + (Number(l.value) || 0), 0))}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Scheduled Follow-Ups -->
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+              <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                  <h2 class="font-bold text-slate-900 text-base">Upcoming &amp; Due Follow-Ups</h2>
+                  <p class="text-xs text-slate-500">Leads with scheduled follow-up dates. Click to log an update or convert to Customer.</p>
+                </div>
+              </div>
+              <div class="divide-y divide-slate-100">
+                ${dueFollowUps.length ? dueFollowUps.slice(0, 6).map(l => {
+                  const st = getStaffById(l.assignedTo);
+                  const isOverdue = l.nextFollowUp < today;
+                  const isToday = l.nextFollowUp === today;
+                  const dateBadge = isOverdue
+                    ? `<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-rose-50 text-rose-700">Overdue (${l.nextFollowUp})</span>`
+                    : isToday
+                    ? `<span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-700">Due Today</span>`
+                    : `<span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600">${l.nextFollowUp}</span>`;
+                  return `
+                    <div data-open-lead="${l.id}" class="px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-slate-50 cursor-pointer transition">
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span class="font-semibold text-sm text-slate-900">${esc(l.name)}</span>
+                          ${l.business ? `<span class="text-xs text-slate-500">· ${esc(l.business)}</span>` : ''}
+                          ${dateBadge}
+                        </div>
+                        <div class="text-xs text-slate-500 mt-0.5 truncate">${esc(l.notes || 'No notes')}</div>
+                      </div>
+                      <div class="flex items-center gap-3 shrink-0">
+                        <span class="text-xs text-slate-600 font-medium">${st ? esc(st.name) : 'Unassigned'}</span>
+                        ${statusBadge(l.status)}
+                      </div>
+                    </div>
+                  `;
+                }).join('') : '<div class="p-6 text-center text-sm text-slate-500">No upcoming follow-ups scheduled. Open any lead to set a follow-up date.</div>'}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function getFilteredLeads() {
+        const q = state.filters.search.trim().toLowerCase();
+        return state.data.leads.filter(l => {
+          if (state.filters.status !== 'all' && l.status !== state.filters.status) return false;
+          if (state.filters.staffId === 'unassigned' && l.assignedTo) return false;
+          if (state.filters.staffId !== 'all' && state.filters.staffId !== 'unassigned' && l.assignedTo !== state.filters.staffId) return false;
+          if (state.filters.source !== 'all' && l.source !== state.filters.source) return false;
+          if (q) {
+            const hay = `${l.name} ${l.business} ${l.phone} ${l.location} ${l.notes}`.toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+      }
+
+      function renderLeadsView() {
+        const filtered = getFilteredLeads();
+        const staffOptions = state.data.staff.map(s => `<option value="${s.id}" ${state.filters.staffId === s.id ? 'selected' : ''}>${esc(s.name)}</option>`).join('');
+
+        return `
+          <div class="space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Leads &amp; Pipeline</h1>
+                <p class="text-sm text-slate-500">Add leads, assign them to working staff, and track every follow-up.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="inline-flex rounded-xl bg-slate-200/70 p-1">
+                  <button data-layout="table" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${state.leadsLayout === 'table' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">List</button>
+                  <button data-layout="board" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition ${state.leadsLayout === 'board' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'}">Board</button>
+                </div>
+                <button data-action="open-add-lead" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 shadow-sm transition">+ Add Lead</button>
+              </div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <input id="filter-search" type="text" value="${esc(state.filters.search)}" placeholder="Search name, phone, business, city..." class="px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <select id="filter-status" class="px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="all" ${state.filters.status === 'all' ? 'selected' : ''}>All Stages</option>
+                <option value="new" ${state.filters.status === 'new' ? 'selected' : ''}>New</option>
+                <option value="working" ${state.filters.status === 'working' ? 'selected' : ''}>Working</option>
+                <option value="followup" ${state.filters.status === 'followup' ? 'selected' : ''}>Follow-Up</option>
+                <option value="customer" ${state.filters.status === 'customer' ? 'selected' : ''}>Customer</option>
+                <option value="lost" ${state.filters.status === 'lost' ? 'selected' : ''}>Lost</option>
+              </select>
+              <select id="filter-staff" class="px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="all" ${state.filters.staffId === 'all' ? 'selected' : ''}>All Staff</option>
+                <option value="unassigned" ${state.filters.staffId === 'unassigned' ? 'selected' : ''}>Unassigned</option>
+                ${staffOptions}
+              </select>
+              <select id="filter-source" class="px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="all" ${state.filters.source === 'all' ? 'selected' : ''}>All Sources</option>
+                ${['WhatsApp', 'Website', 'Instagram', 'Referral', 'Cold Call', 'Walk-in'].map(src => `<option value="${src}" ${state.filters.source === src ? 'selected' : ''}>${src}</option>`).join('')}
+              </select>
+            </div>
+
+            ${state.leadsLayout === 'table' ? renderLeadsTable(filtered) : renderLeadsBoard(filtered)}
+          </div>
+        `;
+      }
+
+      function renderLeadsTable(leads) {
+        if (!leads.length) {
+          return `<div class="bg-white rounded-2xl border border-slate-200 p-10 text-center space-y-2">
+            <div class="text-slate-900 font-semibold">No matching leads found</div>
+            <p class="text-sm text-slate-500">Try clearing your filters or add a new lead to get started.</p>
+          </div>`;
+        }
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
+                    <th class="py-3 px-4">Lead &amp; Business</th>
+                    <th class="py-3 px-3">Contact</th>
+                    <th class="py-3 px-3">Stage</th>
+                    <th class="py-3 px-3">Assigned Staff</th>
+                    <th class="py-3 px-3">Next Follow-Up</th>
+                    <th class="py-3 px-3 text-right">Value</th>
+                    <th class="py-3 px-4 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${leads.map(l => {
+                    const st = getStaffById(l.assignedTo);
+                    const wa = cleanPhoneForWA(l.whatsapp || l.phone);
+                    return `
+                      <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-3.5 px-4 cursor-pointer" data-open-lead="${l.id}">
+                          <div class="font-semibold text-sm text-slate-900">${esc(l.name)}</div>
+                          <div class="text-xs text-slate-500">${esc(l.business || l.source)}${l.location ? ' · ' + esc(l.location) : ''}</div>
+                        </td>
+                        <td class="py-3.5 px-3 text-xs text-slate-600">
+                          <div>${esc(l.phone)}</div>
+                          ${wa ? `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" class="text-emerald-600 hover:underline font-medium">WhatsApp</a>` : ''}
+                        </td>
+                        <td class="py-3.5 px-3">${statusBadge(l.status)}</td>
+                        <td class="py-3.5 px-3">
+                          <select data-quick-assign="${l.id}" class="text-xs rounded-lg border border-slate-200 px-2 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">Unassigned</option>
+                            ${state.data.staff.map(s => `<option value="${s.id}" ${l.assignedTo === s.id ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}
+                          </select>
+                        </td>
+                        <td class="py-3.5 px-3 text-xs text-slate-600">${l.nextFollowUp ? esc(l.nextFollowUp) : '<span class="text-slate-400">—</span>'}</td>
+                        <td class="py-3.5 px-3 text-right text-sm font-semibold text-slate-800">${l.value ? formatINR(l.value) : '—'}</td>
+                        <td class="py-3.5 px-4 text-right">
+                          <button data-open-lead="${l.id}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-xs font-semibold text-slate-700 transition">Open</button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderLeadsBoard(leads) {
+        const cols = ['new', 'working', 'followup', 'customer', 'lost'];
+        return `
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 items-start">
+            ${cols.map(col => {
+              const items = leads.filter(l => l.status === col);
+              const meta = STATUS_META[col];
+              return `
+                <div class="bg-slate-100/80 rounded-2xl p-3 border border-slate-200/70 space-y-2.5">
+                  <div class="flex items-center justify-between px-1">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full ${meta.dot}"></span>
+                      <span class="text-xs font-bold uppercase tracking-wider text-slate-700">${meta.label}</span>
+                    </div>
+                    <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-white text-slate-600 border border-slate-200">${items.length}</span>
+                  </div>
+                  <div class="space-y-2.5">
+                    ${items.length ? items.map(l => {
+                      const st = getStaffById(l.assignedTo);
+                      return `
+                        <div data-open-lead="${l.id}" class="bg-white rounded-xl p-3.5 border border-slate-200 shadow-xs hover:border-indigo-300 cursor-pointer transition space-y-2">
+                          <div class="flex items-start justify-between gap-2">
+                            <div class="font-semibold text-sm text-slate-900 leading-snug">${esc(l.name)}</div>
+                            ${l.value ? `<span class="text-[11px] font-bold text-slate-700 shrink-0">${formatINR(l.value)}</span>` : ''}
+                          </div>
+                          ${l.business ? `<div class="text-xs text-slate-500 truncate">${esc(l.business)}</div>` : ''}
+                          <div class="flex items-center justify-between pt-1 border-t border-slate-100 text-[11px] text-slate-500">
+                            <span>${st ? esc(st.name) : '<span class="text-amber-600 font-medium">Unassigned</span>'}</span>
+                            <span>${l.activities.length} logs</span>
+                          </div>
+                        </div>
+                      `;
+                    }).join('') : '<div class="text-xs text-slate-400 text-center py-6">No leads</div>'}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      function renderCustomersView() {
+        const customers = state.data.leads.filter(l => l.status === 'customer');
+        const totalVal = customers.reduce((s, c) => s + (Number(c.value) || 0), 0);
+
+        return `
+          <div class="space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Customers</h1>
+                <p class="text-sm text-slate-500">All leads successfully converted into paying customers (${customers.length} total · ${formatINR(totalVal)}).</p>
+              </div>
+              <button data-goto="staff" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">See Staff Conversions →</button>
+            </div>
+
+            ${customers.length ? `
+              <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left border-collapse">
+                    <thead>
+                      <tr class="bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200">
+                        <th class="py-3 px-4">Customer</th>
+                        <th class="py-3 px-3">Location &amp; Source</th>
+                        <th class="py-3 px-3">Converted By (Staff)</th>
+                        <th class="py-3 px-3">Converted Date</th>
+                        <th class="py-3 px-3 text-right">Deal Value</th>
+                        <th class="py-3 px-4 text-right">History</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      ${customers.map(c => {
+                        const st = getStaffById(c.assignedTo);
+                        return `
+                          <tr class="hover:bg-slate-50 transition">
+                            <td class="py-3.5 px-4">
+                              <div class="font-semibold text-sm text-slate-900">${esc(c.name)}</div>
+                              <div class="text-xs text-slate-500">${esc(c.business || c.phone)}</div>
+                            </td>
+                            <td class="py-3.5 px-3 text-xs text-slate-600">${esc(c.location || '—')} · ${esc(c.source)}</td>
+                            <td class="py-3.5 px-3">
+                              ${st ? `<button data-open-staff="${st.id}" class="text-xs font-semibold text-indigo-600 hover:underline">${esc(st.name)}</button>` : '<span class="text-xs text-slate-400">Unassigned</span>'}
+                            </td>
+                            <td class="py-3.5 px-3 text-xs text-slate-600">${esc(c.convertedAt || c.createdAt)}</td>
+                            <td class="py-3.5 px-3 text-right text-sm font-bold text-emerald-700">${formatINR(c.value)}</td>
+                            <td class="py-3.5 px-4 text-right">
+                              <button data-open-lead="${c.id}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 text-xs font-semibold text-slate-700 transition">View Log</button>
+                            </td>
+                          </tr>
+                        `;
+                      }).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ` : `
+              <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center space-y-2">
+                <div class="font-semibold text-slate-900">No customers converted yet</div>
+                <p class="text-sm text-slate-500">When your staff follow up on a lead and mark them as "Customer", they will appear here.</p>
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      function renderStaffDirectory() {
+        return `
+          <div class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Staff Profiles</h1>
+                <p class="text-sm text-slate-500">Open any staff profile to see how many leads they handle and how many they turned into customers.</p>
+              </div>
+              <button data-action="open-add-staff" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 shadow-sm transition">+ Add Staff</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              ${state.data.staff.map(st => {
+                const m = getStaffMetrics(st.id);
+                return `
+                  <div data-open-staff="${st.id}" class="bg-white rounded-2xl border border-slate-200 p-5 hover:border-indigo-300 hover:shadow-md cursor-pointer transition flex flex-col justify-between space-y-4">
+                    <div class="flex items-center gap-3.5">
+                      <div class="w-12 h-12 rounded-2xl ${AVATAR_COLORS[st.colorIdx % AVATAR_COLORS.length]} flex items-center justify-center text-base font-bold shrink-0">${esc(initials(st.name))}</div>
+                      <div class="min-w-0">
+                        <h3 class="font-bold text-slate-900 text-base truncate">${esc(st.name)}</h3>
+                        <p class="text-xs text-slate-500 truncate">${esc(st.role)}</p>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 bg-slate-50 rounded-xl p-3 border border-slate-100 text-center">
+                      <div>
+                        <div class="text-lg font-bold text-slate-900">${m.assigned.length}</div>
+                        <div class="text-[11px] text-slate-500 font-medium">Assigned</div>
+                      </div>
+                      <div>
+                        <div class="text-lg font-bold text-emerald-600">${m.customers.length}</div>
+                        <div class="text-[11px] text-emerald-700 font-semibold">Customers</div>
+                      </div>
+                      <div>
+                        <div class="text-lg font-bold text-indigo-600">${m.conversionRate}%</div>
+                        <div class="text-[11px] text-slate-500 font-medium">Conv. Rate</div>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs pt-1">
+                      <span class="text-slate-500">Closed value: <strong class="text-slate-800">${formatINR(m.customerValue)}</strong></span>
+                      <span class="font-semibold text-indigo-600">Open Profile →</span>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderStaffProfile(staffId) {
+        const st = getStaffById(staffId);
+        if (!st) {
+          state.selectedStaffId = null;
+          return renderStaffDirectory();
+        }
+        const m = getStaffMetrics(st.id);
+        const filteredLeads = state.staffLeadFilter === 'all'
+          ? m.assigned
+          : m.assigned.filter(l => l.status === state.staffLeadFilter);
+
+        // Gather all follow-ups performed by this staff member
+        const followUps = [];
+        state.data.leads.forEach(l => {
+          l.activities.forEach(a => {
+            if (a.type === 'followup' && a.by === st.name) {
+              followUps.push({ ...a, leadId: l.id, leadName: l.name, leadStatus: l.status });
+            }
+          });
+        });
+        followUps.sort((a, b) => b.date.localeCompare(a.date));
+
+        const total = m.assigned.length || 1;
+        const pctCust = Math.round((m.customers.length / total) * 100);
+        const pctActive = Math.round((m.active.length / total) * 100);
+        const pctLost = Math.max(0, 100 - pctCust - pctActive);
+
+        return `
+          <div class="space-y-6">
+            <!-- Back & Actions -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <button data-action="back-to-staff" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900 w-fit">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                <span>Back to All Staff</span>
+              </button>
+              <div class="flex items-center gap-2">
+                <button data-edit-staff="${st.id}" class="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50">Edit Profile</button>
+                <button data-delete-staff="${st.id}" class="px-3.5 py-1.5 rounded-xl border border-rose-200 bg-rose-50 text-xs font-semibold text-rose-700 hover:bg-rose-100">Remove</button>
+              </div>
+            </div>
+
+            <!-- Profile Header Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-5">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-14 h-14 rounded-2xl ${AVATAR_COLORS[st.colorIdx % AVATAR_COLORS.length]} flex items-center justify-center text-xl font-bold">${esc(initials(st.name))}</div>
+                  <div>
+                    <h1 class="text-xl font-bold text-slate-900">${esc(st.name)}</h1>
+                    <p class="text-sm text-slate-500">${esc(st.role)}</p>
+                    <div class="flex flex-wrap gap-3 mt-1 text-xs text-slate-500">
+                      ${st.phone ? `<span>${esc(st.phone)}</span>` : ''}
+                      ${st.email ? `<span>${esc(st.email)}</span>` : ''}
+                    </div>
+                  </div>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-200 rounded-2xl px-5 py-3 text-center sm:text-right">
+                  <div class="text-xs font-semibold text-emerald-700 uppercase tracking-wider">Leads Made Customers</div>
+                  <div class="text-2xl font-bold text-emerald-700 mt-0.5">${m.customers.length} <span class="text-sm font-semibold">of ${m.assigned.length} (${m.conversionRate}%)</span></div>
+                </div>
+              </div>
+
+              <!-- 4 Scorecard Stats -->
+              <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+                <div class="rounded-xl bg-slate-50 border border-slate-100 p-3.5">
+                  <div class="text-xs text-slate-500 font-medium">Total Assigned</div>
+                  <div class="text-2xl font-bold text-slate-900 mt-1">${m.assigned.length}</div>
+                </div>
+                <div class="rounded-xl bg-blue-50/70 border border-blue-100 p-3.5">
+                  <div class="text-xs text-blue-700 font-medium">Working / Follow-Up</div>
+                  <div class="text-2xl font-bold text-blue-700 mt-1">${m.active.length}</div>
+                </div>
+                <div class="rounded-xl bg-emerald-50/70 border border-emerald-100 p-3.5">
+                  <div class="text-xs text-emerald-700 font-medium">Converted Customers</div>
+                  <div class="text-2xl font-bold text-emerald-700 mt-1">${m.customers.length}</div>
+                </div>
+                <div class="rounded-xl bg-indigo-50/70 border border-indigo-100 p-3.5">
+                  <div class="text-xs text-indigo-700 font-medium">Customer Deal Value</div>
+                  <div class="text-2xl font-bold text-indigo-700 mt-1">${formatINR(m.customerValue)}</div>
+                </div>
+              </div>
+
+              <!-- Conversion Split Bar -->
+              ${m.assigned.length ? `
+                <div>
+                  <div class="flex items-center justify-between text-xs text-slate-500 mb-1.5">
+                    <span>Lead Outcome Breakdown</span>
+                    <span>${m.customers.length} Customers · ${m.active.length} Active · ${m.lost.length} Lost</span>
+                  </div>
+                  <div class="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden flex">
+                    <div class="bg-emerald-500 h-full" style="width:${pctCust}%"></div>
+                    <div class="bg-blue-500 h-full" style="width:${pctActive}%"></div>
+                    <div class="bg-rose-400 h-full" style="width:${pctLost}%"></div>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+
+            <!-- Tabs: Assigned Leads vs Follow-Up Activity -->
+            <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+              <div class="px-5 py-3 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                  <button data-staff-tab="leads" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition ${state.staffTab === 'leads' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">Assigned Leads (${m.assigned.length})</button>
+                  <button data-staff-tab="followups" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition ${state.staffTab === 'followups' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">Follow-Up Log (${followUps.length})</button>
+                </div>
+                ${state.staffTab === 'leads' ? `
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    ${['all', 'customer', 'working', 'followup', 'lost'].map(f => {
+                      const label = f === 'all' ? 'All' : STATUS_META[f].label;
+                      const active = state.staffLeadFilter === f;
+                      return `<button data-staff-lead-filter="${f}" class="px-2.5 py-1 rounded-lg text-xs font-semibold transition ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">${label}</button>`;
+                    }).join('')}
+                  </div>
+                ` : ''}
+              </div>
+
+              ${state.staffTab === 'leads' ? `
+                <div class="divide-y divide-slate-100">
+                  ${filteredLeads.length ? filteredLeads.map(l => `
+                    <div data-open-lead="${l.id}" class="px-5 py-3.5 flex items-center justify-between gap-3 hover:bg-slate-50 cursor-pointer transition">
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span class="font-semibold text-sm text-slate-900">${esc(l.name)}</span>
+                          ${l.business ? `<span class="text-xs text-slate-500">· ${esc(l.business)}</span>` : ''}
+                        </div>
+                        <div class="text-xs text-slate-500 mt-0.5">${esc(l.phone)} · ${l.activities.length} activity logs</div>
+                      </div>
+                      <div class="flex items-center gap-3 shrink-0">
+                        ${l.value ? `<span class="text-xs font-bold text-slate-700">${formatINR(l.value)}</span>` : ''}
+                        ${statusBadge(l.status)}
+                      </div>
+                    </div>
+                  `).join('') : '<div class="p-8 text-center text-sm text-slate-500">No leads in this filter.</div>'}
+                </div>
+              ` : `
+                <div class="divide-y divide-slate-100">
+                  ${followUps.length ? followUps.map(f => `
+                    <div data-open-lead="${f.leadId}" class="px-5 py-3.5 hover:bg-slate-50 cursor-pointer transition">
+                      <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                          <span class="font-semibold text-sm text-slate-900">${esc(f.leadName)}</span>
+                          ${f.outcome ? `<span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[11px] font-semibold">${esc(f.outcome)}</span>` : ''}
+                        </div>
+                        <span class="text-xs text-slate-400">${esc(f.date)}</span>
+                      </div>
+                      <p class="text-xs text-slate-600 mt-1">${esc(f.text)}</p>
+                    </div>
+                  `).join('') : '<div class="p-8 text-center text-sm text-slate-500">No follow-ups logged by this staff member yet.</div>'}
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }
+
+      function openLeadModal(leadId = null) {
+        const lead = leadId ? state.data.leads.find(l => l.id === leadId) : null;
+        document.getElementById('lead-modal-title').textContent = lead ? 'Edit Lead' : 'Add New Lead';
+        document.getElementById('lead-id-input').value = lead ? lead.id : '';
+        document.getElementById('lead-name-input').value = lead ? lead.name : '';
+        document.getElementById('lead-business-input').value = lead ? lead.business : '';
+        document.getElementById('lead-phone-input').value = lead ? lead.phone : '';
+        document.getElementById('lead-whatsapp-input').value = lead ? lead.whatsapp : '';
+        document.getElementById('lead-location-input').value = lead ? lead.location : '';
+        document.getElementById('lead-source-input').value = lead ? lead.source : 'WhatsApp';
+        document.getElementById('lead-status-input').value = lead ? lead.status : 'new';
+        document.getElementById('lead-value-input').value = lead && lead.value ? lead.value : '';
+        document.getElementById('lead-nextdate-input').value = lead ? (lead.nextFollowUp || '') : '';
+        document.getElementById('lead-notes-input').value = lead ? (lead.notes || '') : '';
+
+        const staffSel = document.getElementById('lead-staff-input');
+        staffSel.innerHTML = `<option value="">Unassigned</option>` +
+          state.data.staff.map(s => `<option value="${s.id}" ${lead && lead.assignedTo === s.id ? 'selected' : ''}>${esc(s.name)}</option>`).join('');
+
+        document.getElementById('lead-modal').classList.remove('hidden');
+      }
+
+      function openLeadDetail(leadId) {
+        const l = state.data.leads.find(item => item.id === leadId);
+        if (!l) return;
+        const st = getStaffById(l.assignedTo);
+        const wa = cleanPhoneForWA(l.whatsapp || l.phone);
+        const content = document.getElementById('detail-modal-content');
+
+        content.innerHTML = `
+          <div class="px-6 py-4 border-b border-slate-100 flex items-start justify-between gap-3 sticky top-0 bg-white z-10">
+            <div>
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <h2 class="text-lg font-bold text-slate-900">${esc(l.name)}</h2>
+                ${statusBadge(l.status)}
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">${esc(l.business || 'Individual')} · ${esc(l.location || 'No location')} · Source: ${esc(l.source)}</p>
+            </div>
+            <button data-close-modal="detail-modal" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Quick Contact & Actions -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 rounded-xl p-3.5 border border-slate-100">
+              <div class="flex flex-wrap items-center gap-3 text-sm">
+                <a href="tel:${esc(l.phone)}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 font-medium hover:bg-slate-100 text-xs">Call ${esc(l.phone)}</a>
+                ${wa ? `<a href="https://wa.me/${wa}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 text-xs">WhatsApp</a>` : ''}
+                ${l.value ? `<span class="text-xs font-bold text-slate-700 px-2">Est. ${formatINR(l.value)}</span>` : ''}
+              </div>
+              <div class="flex items-center gap-2">
+                <button data-edit-lead="${l.id}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50">Edit</button>
+                <button data-delete-lead="${l.id}" class="px-3 py-1.5 rounded-lg border border-rose-200 bg-rose-50 text-xs font-semibold text-rose-700 hover:bg-rose-100">Delete</button>
+              </div>
+            </div>
+
+            <!-- Assignment & Stage Controls -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Assign to Working Staff</label>
+                <select id="detail-assign-select" data-detail-assign="${l.id}" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="">Unassigned</option>
+                  ${state.data.staff.map(s => `<option value="${s.id}" ${l.assignedTo === s.id ? 'selected' : ''}>${esc(s.name)} (${esc(s.role)})</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Lead Stage</label>
+                <select id="detail-status-select" data-detail-status="${l.id}" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  ${Object.keys(STATUS_META).map(k => `<option value="${k}" ${l.status === k ? 'selected' : ''}>${STATUS_META[k].label}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+
+            ${l.notes ? `
+              <div class="text-sm text-slate-700 bg-indigo-50/50 border border-indigo-100 rounded-xl p-3.5">
+                <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 mb-1">Requirement / Notes</div>
+                <p>${esc(l.notes)}</p>
+              </div>
+            ` : ''}
+
+            <!-- Log New Follow-Up -->
+            <form id="followup-form" data-lead-id="${l.id}" class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-slate-900">Log Follow-Up</h3>
+                <span class="text-xs text-slate-500">Logged by: <strong>${st ? esc(st.name) : 'Admin'}</strong></span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Outcome</label>
+                  <select id="fu-outcome" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+                    <option value="Called">Called</option>
+                    <option value="WhatsApp Sent">WhatsApp Sent</option>
+                    <option value="Meeting Done">Meeting Done</option>
+                    <option value="Quote Sent">Quote Sent</option>
+                    <option value="Interested">Interested</option>
+                    <option value="No Answer">No Answer</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Next Follow-Up Date</label>
+                  <input id="fu-nextdate" type="date" value="${esc(l.nextFollowUp || '')}" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white" />
+                </div>
+              </div>
+              <div>
+                <textarea id="fu-note" rows="2" required placeholder="What happened in this follow-up?" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+              </div>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="inline-flex items-center gap-2 text-xs font-medium text-emerald-700 cursor-pointer">
+                  <input id="fu-convert-check" type="checkbox" class="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500" ${l.status === 'customer' ? 'checked disabled' : ''} />
+                  <span>Mark as Customer (Converted)</span>
+                </label>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 shadow-sm">Save Follow-Up</button>
+              </div>
+            </form>
+
+            <!-- Activity Timeline -->
+            <div>
+              <h3 class="text-sm font-bold text-slate-900 mb-3">Complete Activity Timeline (${l.activities.length})</h3>
+              <div class="space-y-3 border-l-2 border-slate-200 ml-2 pl-4">
+                ${[...l.activities].reverse().map(a => `
+                  <div class="relative">
+                    <span class="w-2.5 h-2.5 rounded-full ${a.type === 'followup' ? 'bg-amber-500' : a.type === 'status' ? 'bg-emerald-500' : 'bg-indigo-500'} absolute -left-[21px] top-1.5 ring-4 ring-white"></span>
+                    <div class="flex items-center justify-between gap-2 text-xs">
+                      <span class="font-semibold text-slate-800">${esc(a.by)}${a.outcome ? ` · <span class="text-amber-700">${esc(a.outcome)}</span>` : ''}</span>
+                      <span class="text-slate-400">${esc(a.date)}</span>
+                    </div>
+                    <p class="text-xs text-slate-600 mt-0.5">${esc(a.text)}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.getElementById('detail-modal').classList.remove('hidden');
+      }
+
+      function openStaffModal(staffId = null) {
+        const st = staffId ? getStaffById(staffId) : null;
+        document.getElementById('staff-modal-title').textContent = st ? 'Edit Staff Member' : 'Add Staff Member';
+        document.getElementById('staff-id-input').value = st ? st.id : '';
+        document.getElementById('staff-name-input').value = st ? st.name : '';
+        document.getElementById('staff-role-input').value = st ? st.role : '';
+        document.getElementById('staff-phone-input').value = st ? (st.phone || '') : '';
+        document.getElementById('staff-email-input').value = st ? (st.email || '') : '';
+        document.getElementById('staff-modal').classList.remove('hidden');
+      }
+
+      function assignLead(leadId, staffId) {
+        const l = state.data.leads.find(item => item.id === leadId);
+        if (!l) return;
+        const st = getStaffById(staffId);
+        l.assignedTo = staffId;
+        let msg = st ? `Assigned to ${st.name}` : 'Unassigned';
+        if (staffId && l.status === 'new') {
+          l.status = 'working';
+          msg += ' (moved to Working)';
+        }
+        l.activities.push({
+          id: uid('ac'),
+          type: 'assigned',
+          by: 'Admin',
+          text: msg,
+          date: nowTimestamp()
+        });
+        saveData();
+        toast(msg);
+      }
+
+      function changeLeadStatus(leadId, newStatus) {
+        const l = state.data.leads.find(item => item.id === leadId);
+        if (!l || l.status === newStatus) return;
+        l.status = newStatus;
+        if (newStatus === 'customer' && !l.convertedAt) {
+          l.convertedAt = todayISO(0);
+          l.nextFollowUp = '';
+        }
+        const st = getStaffById(l.assignedTo);
+        l.activities.push({
+          id: uid('ac'),
+          type: 'status',
+          by: st ? st.name : 'Admin',
+          text: `Stage changed to ${STATUS_META[newStatus].label}`,
+          date: nowTimestamp()
+        });
+        saveData();
+        toast(`Lead marked as ${STATUS_META[newStatus].label}`);
+      }
+
+      function exportCSV() {
+        const headers = ['Name', 'Phone', 'WhatsApp', 'Business', 'Location', 'Source', 'Status', 'AssignedStaff', 'Value', 'NextFollowUp', 'Notes'];
+        const rows = state.data.leads.map(l => {
+          const st = getStaffById(l.assignedTo);
+          return [
+            l.name, l.phone, l.whatsapp || l.phone, l.business || '', l.location || '',
+            l.source, STATUS_META[l.status]?.label || l.status, st ? st.name : '',
+            l.value || 0, l.nextFollowUp || '', l.notes || ''
+          ].map(val => `"${String(val).replace(/"/g, '""')}"`).join(',');
+        });
+        const csv = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `leadflow-leads-${todayISO(0)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast('Exported leads to CSV');
+      }
+
+      function parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') {
+            if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+            else { inQuotes = !inQuotes; }
+          } else if (ch === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+          } else {
+            current += ch;
+          }
+        }
+        result.push(current.trim());
+        return result;
+      }
+
+      // Event Delegation
+      document.addEventListener('click', (e) => {
+        const navBtn = e.target.closest('.nav-btn');
+        if (navBtn) {
+          state.view = navBtn.dataset.nav;
+          if (state.view === 'staff') state.selectedStaffId = null;
+          closeMobileSidebar();
+          render();
+          return;
+        }
+
+        const gotoBtn = e.target.closest('[data-goto]');
+        if (gotoBtn) {
+          state.view = gotoBtn.dataset.goto;
+          if (state.view === 'staff') state.selectedStaffId = null;
+          render();
+          return;
+        }
+
+        if (e.target.closest('[data-action="open-add-lead"]') || e.target.closest('#sidebar-add-lead-btn') || e.target.closest('#mobile-add-lead-btn')) {
+          closeMobileSidebar();
+          openLeadModal();
+          return;
+        }
+
+        if (e.target.closest('[data-action="open-add-staff"]')) {
+          openStaffModal();
+          return;
+        }
+
+        if (e.target.closest('[data-action="back-to-staff"]')) {
+          state.selectedStaffId = null;
+          render();
+          return;
+        }
+
+        const layoutBtn = e.target.closest('[data-layout]');
+        if (layoutBtn) {
+          state.leadsLayout = layoutBtn.dataset.layout;
+          render();
+          return;
+        }
+
+        const openLeadEl = e.target.closest('[data-open-lead]');
+        if (openLeadEl && !e.target.closest('select') && !e.target.closest('a')) {
+          openLeadDetail(openLeadEl.dataset.openLead);
+          return;
+        }
+
+        const openStaffEl = e.target.closest('[data-open-staff]');
+        if (openStaffEl) {
+          state.view = 'staff';
+          state.selectedStaffId = openStaffEl.dataset.openStaff;
+          state.staffTab = 'leads';
+          state.staffLeadFilter = 'all';
+          render();
+          return;
+        }
+
+        const staffTabBtn = e.target.closest('[data-staff-tab]');
+        if (staffTabBtn) {
+          state.staffTab = staffTabBtn.dataset.staffTab;
+          render();
+          return;
+        }
+
+        const staffFilterBtn = e.target.closest('[data-staff-lead-filter]');
+        if (staffFilterBtn) {
+          state.staffLeadFilter = staffFilterBtn.dataset.staffLeadFilter;
+          render();
+          return;
+        }
+
+        const editLeadBtn = e.target.closest('[data-edit-lead]');
+        if (editLeadBtn) {
+          closeModal('detail-modal');
+          openLeadModal(editLeadBtn.dataset.editLead);
+          return;
+        }
+
+        const delLeadBtn = e.target.closest('[data-delete-lead]');
+        if (delLeadBtn) {
+          const id = delLeadBtn.dataset.deleteLead;
+          openConfirm('Delete Lead', 'Are you sure you want to remove this lead and its follow-up history?', () => {
+            state.data.leads = state.data.leads.filter(l => l.id !== id);
+            saveData();
+            closeModal('detail-modal');
+            render();
+            toast('Lead deleted', 'info');
+          });
+          return;
+        }
+
+        const editStaffBtn = e.target.closest('[data-edit-staff]');
+        if (editStaffBtn) {
+          openStaffModal(editStaffBtn.dataset.editStaff);
+          return;
+        }
+
+        const delStaffBtn = e.target.closest('[data-delete-staff]');
+        if (delStaffBtn) {
+          const id = delStaffBtn.dataset.deleteStaff;
+          openConfirm('Remove Staff Member', 'Their assigned leads will become Unassigned, but lead history will be kept.', () => {
+            state.data.staff = state.data.staff.filter(s => s.id !== id);
+            state.data.leads.forEach(l => { if (l.assignedTo === id) l.assignedTo = ''; });
+            state.selectedStaffId = null;
+            saveData();
+            render();
+            toast('Staff member removed', 'info');
+          });
+          return;
+        }
+
+        const closeBtn = e.target.closest('[data-close-modal]');
+        if (closeBtn) {
+          closeModal(closeBtn.dataset.closeModal);
+          return;
+        }
+      });
+
+      document.addEventListener('input', (e) => {
+        if (e.target.id === 'filter-search') {
+          state.filters.search = e.target.value;
+          const pos = e.target.selectionStart;
+          render();
+          const input = document.getElementById('filter-search');
+          if (input) { input.focus(); input.setSelectionRange(pos, pos); }
+        }
+      });
+
+      document.addEventListener('change', (e) => {
+        if (e.target.id === 'filter-status') { state.filters.status = e.target.value; render(); return; }
+        if (e.target.id === 'filter-staff') { state.filters.staffId = e.target.value; render(); return; }
+        if (e.target.id === 'filter-source') { state.filters.source = e.target.value; render(); return; }
+
+        if (e.target.dataset.quickAssign) {
+          assignLead(e.target.dataset.quickAssign, e.target.value);
+          render();
+          return;
+        }
+        if (e.target.dataset.detailAssign) {
+          assignLead(e.target.dataset.detailAssign, e.target.value);
+          openLeadDetail(e.target.dataset.detailAssign);
+          render();
+          return;
+        }
+        if (e.target.dataset.detailStatus) {
+          changeLeadStatus(e.target.dataset.detailStatus, e.target.value);
+          openLeadDetail(e.target.dataset.detailStatus);
+          render();
+          return;
+        }
+      });
+
+      // Lead Form Submit
+      document.getElementById('lead-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('lead-id-input').value;
+        const name = document.getElementById('lead-name-input').value.trim();
+        const business = document.getElementById('lead-business-input').value.trim();
+        const phone = document.getElementById('lead-phone-input').value.trim();
+        const whatsapp = document.getElementById('lead-whatsapp-input').value.trim() || phone;
+        const location = document.getElementById('lead-location-input').value.trim();
+        const source = document.getElementById('lead-source-input').value;
+        const assignedTo = document.getElementById('lead-staff-input').value;
+        let status = document.getElementById('lead-status-input').value;
+        const value = Number(document.getElementById('lead-value-input').value) || 0;
+        const nextFollowUp = document.getElementById('lead-nextdate-input').value;
+        const notes = document.getElementById('lead-notes-input').value.trim();
+
+        if (!id && assignedTo && status === 'new') {
+          status = 'working';
+        }
+
+        if (id) {
+          const existing = state.data.leads.find(l => l.id === id);
+          if (existing) {
+            const prevStaff = existing.assignedTo;
+            const prevStatus = existing.status;
+            Object.assign(existing, { name, business, phone, whatsapp, location, source, assignedTo, status, value, nextFollowUp, notes });
+            if (assignedTo !== prevStaff) {
+              const st = getStaffById(assignedTo);
+              existing.activities.push({ id: uid('ac'), type: 'assigned', by: 'Admin', text: st ? `Assigned to ${st.name}` : 'Unassigned', date: nowTimestamp() });
+            }
+            if (status !== prevStatus) {
+              if (status === 'customer' && !existing.convertedAt) existing.convertedAt = todayISO(0);
+              existing.activities.push({ id: uid('ac'), type: 'status', by: 'Admin', text: `Stage updated to ${STATUS_META[status].label}`, date: nowTimestamp() });
+            }
+          }
+          toast('Lead updated');
+        } else {
+          const st = getStaffById(assignedTo);
+          const activities = [
+            { id: uid('ac'), type: 'created', by: 'Admin', text: `Lead added from ${source}`, date: nowTimestamp() }
+          ];
+          if (st) {
+            activities.push({ id: uid('ac'), type: 'assigned', by: 'Admin', text: `Assigned to ${st.name} (${STATUS_META[status].label})`, date: nowTimestamp() });
+          }
+          state.data.leads.unshift({
+            id: uid('ld'),
+            name, business, phone, whatsapp, location, source, status, assignedTo, value, nextFollowUp, notes,
+            createdAt: todayISO(0),
+            convertedAt: status === 'customer' ? todayISO(0) : '',
+            activities
+          });
+          toast('New lead added');
+        }
+
+        saveData();
+        closeModal('lead-modal');
+        render();
+      });
+
+      // Follow-Up Form Submit (delegated)
+      document.addEventListener('submit', (e) => {
+        if (e.target.id === 'followup-form') {
+          e.preventDefault();
+          const leadId = e.target.dataset.leadId;
+          const l = state.data.leads.find(item => item.id === leadId);
+          if (!l) return;
+
+          const outcome = document.getElementById('fu-outcome').value;
+          const nextDate = document.getElementById('fu-nextdate').value;
+          const note = document.getElementById('fu-note').value.trim();
+          const convert = document.getElementById('fu-convert-check').checked;
+          const st = getStaffById(l.assignedTo);
+          const actor = st ? st.name : 'Admin';
+
+          l.activities.push({
+            id: uid('ac'),
+            type: 'followup',
+            by: actor,
+            outcome,
+            text: note,
+            date: nowTimestamp()
+          });
+
+          if (convert && l.status !== 'customer') {
+            l.status = 'customer';
+            l.convertedAt = todayISO(0);
+            l.nextFollowUp = '';
+            l.activities.push({
+              id: uid('ac'),
+              type: 'status',
+              by: actor,
+              text: `Converted lead to Customer`,
+              date: nowTimestamp()
+            });
+            toast('Follow-up logged & Lead converted to Customer!');
+          } else {
+            l.nextFollowUp = nextDate;
+            if (l.status === 'new' || l.status === 'working') {
+              l.status = 'followup';
+            }
+            toast('Follow-up logged');
+          }
+
+          saveData();
+          openLeadDetail(leadId);
+          render();
+        }
+      });
+
+      // Staff Form Submit
+      document.getElementById('staff-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('staff-id-input').value;
+        const name = document.getElementById('staff-name-input').value.trim();
+        const role = document.getElementById('staff-role-input').value.trim();
+        const phone = document.getElementById('staff-phone-input').value.trim();
+        const email = document.getElementById('staff-email-input').value.trim();
+
+        if (id) {
+          const st = getStaffById(id);
+          if (st) Object.assign(st, { name, role, phone, email });
+          toast('Staff profile updated');
+        } else {
+          state.data.staff.push({
+            id: uid('st'),
+            name, role, phone, email,
+            colorIdx: state.data.staff.length % AVATAR_COLORS.length
+          });
+          toast('Staff member added');
+        }
+
+        saveData();
+        closeModal('staff-modal');
+        render();
+      });
+
+      // Confirm Modal Buttons
+      document.getElementById('confirm-cancel-btn').addEventListener('click', () => {
+        confirmCallback = null;
+        closeModal('confirm-modal');
+      });
+      document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+        if (confirmCallback) confirmCallback();
+        confirmCallback = null;
+        closeModal('confirm-modal');
+      });
+
+      // CSV Export / Import / Reset
+      document.getElementById('export-csv-btn').addEventListener('click', exportCSV);
+      document.getElementById('import-csv-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const lines = String(evt.target.result || '').split(/\r?\n/).filter(Boolean);
+          if (lines.length < 2) { toast('CSV file has no data rows', 'error'); return; }
+          const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase());
+          const idx = (key) => headers.findIndex(h => h.includes(key));
+          let added = 0;
+          for (let i = 1; i < lines.length; i++) {
+            const cols = parseCSVLine(lines[i]);
+            const name = cols[idx('name')] || cols[0];
+            const phone = cols[idx('phone')] || cols[1] || '';
+            if (!name) continue;
+            state.data.leads.unshift({
+              id: uid('ld'),
+              name,
+              phone,
+              whatsapp: cols[idx('whatsapp')] || phone,
+              business: idx('business') >= 0 ? cols[idx('business')] : '',
+              location: idx('location') >= 0 ? cols[idx('location')] : '',
+              source: idx('source') >= 0 && cols[idx('source')] ? cols[idx('source')] : 'CSV Import',
+              status: 'new',
+              assignedTo: '',
+              value: 0,
+              nextFollowUp: '',
+              notes: 'Imported via CSV',
+              createdAt: todayISO(0),
+              convertedAt: '',
+              activities: [{ id: uid('ac'), type: 'created', by: 'Admin', text: 'Imported from CSV', date: nowTimestamp() }]
+            });
+            added++;
+          }
+          saveData();
+          render();
+          toast(`Imported ${added} leads from CSV`);
+          e.target.value = '';
+        };
+        reader.readAsText(file);
+      });
+
+      document.getElementById('reset-demo-btn').addEventListener('click', () => {
+        openConfirm('Reset Sample Data', 'This will restore the default sample leads and staff members.', () => {
+          state.data = createSeedData();
+          state.selectedStaffId = null;
+          saveData();
+          render();
+          toast('Sample data restored', 'info');
+        });
+      });
+
+      // Mobile Sidebar Toggle
+      function openMobileSidebar() {
+        document.getElementById('sidebar').classList.remove('-translate-x-full');
+        document.getElementById('mobile-nav-overlay').classList.remove('hidden');
+      }
+      function closeMobileSidebar() {
+        document.getElementById('sidebar').classList.add('-translate-x-full');
+        document.getElementById('mobile-nav-overlay').classList.add('hidden');
+      }
+      document.getElementById('mobile-menu-btn').addEventListener('click', openMobileSidebar);
+      document.getElementById('close-mobile-menu').addEventListener('click', closeMobileSidebar);
+      document.getElementById('mobile-nav-overlay').addEventListener('click', closeMobileSidebar);
+
+      // Initial Render
+      render();
+    })();
+  </script>
+</body>
+</html>
